@@ -7,7 +7,9 @@ authors = [
     { email = "minjiezha@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "google-genai>=1.41.0",
+]
 
 [project.scripts]
 build-a-coding-agent = "build_a_coding_agent:main"
