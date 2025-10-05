@@ -37,7 +37,7 @@ class Agent:
                 response = chat.send_message(function_call_result)
                 function_call = self._get_function_call(response)
 
-            print(f"\u001b[92mAgent\u001b[0m: {response.text}")
+            print(f"\u001b[93mAgent\u001b[0m: {response.text}")
 
     def _tool_declarations(self) -> List[types.Tool]:
         tool_declarations = []
