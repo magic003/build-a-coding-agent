@@ -9,6 +9,6 @@ def main() -> None:
     agent = Agent(
         client=client,
         model="gemini-2.5-flash",
-        tools=[tools.READ_FILE_TOOL, tools.LIST_FILE_TOOL],
+        tools=[tools.READ_FILE_TOOL, tools.LIST_FILE_TOOL, tools.EDIT_FILE_TOOL],
     )
     agent.run()
