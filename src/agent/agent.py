@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from google import genai
 from google.genai import types
@@ -31,11 +31,14 @@ class Agent:
                 break
 
             response = chat.send_message(user_message)
-            function_call = self._get_function_call(response)
-            while function_call is not None:
-                function_call_result = self._execute_function_call(function_call)
-                response = chat.send_message(function_call_result)
-                function_call = self._get_function_call(response)
+            function_calls = self._get_function_calls(response)
+            while function_calls:
+                results = []
+                for function_call in function_calls:
+                    function_call_result = self._execute_function_call(function_call)
+                    results.append(function_call_result)
+                response = chat.send_message(results)
+                function_calls = self._get_function_calls(response)
 
             print(f"\u001b[93mAgent\u001b[0m: {response.text}")
 
@@ -50,17 +53,21 @@ class Agent:
             tool_declarations.append(types.Tool(function_declarations=[decl]))
         return tool_declarations
 
-    def _get_function_call(
+    def _get_function_calls(
         self, response: types.GenerateContentResponse
-    ) -> Optional[types.FunctionCall]:
+    ) -> List[types.FunctionCall]:
         if response.candidates is None:
-            return None
+            return []
 
         content = response.candidates[0].content
         if content is None or content.parts is None:
-            return None
+            return []
 
-        return content.parts[0].function_call
+        return [
+            part.function_call
+            for part in content.parts
+            if part.function_call is not None
+        ]
 
     def _execute_function_call(self, function_call: types.FunctionCall) -> types.Part:
         if function_call.name is None:
